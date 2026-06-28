@@ -122,7 +122,7 @@ export default function MapView() {
   }
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-0" style={{ height: 'calc(100vh - 56px)', overflow: 'hidden' }}>
+    <div className="relative flex flex-col flex-1 min-h-0 h-[calc(100vh-180px)] sm:h-[calc(100vh-140px)] overflow-hidden">
       <div className="flex items-center gap-2 sm:gap-4 px-3 py-2 bg-slate-50 border-b border-slate-200 text-xs overflow-x-auto flex-shrink-0">
         <span className="text-slate-500 font-medium flex-shrink-0">Severity:</span>
         {Object.entries(SEVERITY_COLOR).map(([s, c]) => (

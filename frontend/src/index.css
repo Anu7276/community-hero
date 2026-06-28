@@ -250,9 +250,9 @@ button { -webkit-user-select: none; user-select: none; }
 }
 
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 #F8FAFC;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-*::-webkit-scrollbar { width: 6px; height: 6px; }
-*::-webkit-scrollbar-track { background: #F8FAFC; }
-*::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+*::-webkit-scrollbar {
+  display: none;
+}
