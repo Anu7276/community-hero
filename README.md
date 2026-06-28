@@ -4,6 +4,10 @@ AI-powered hyperlocal infrastructure issue reporting for citizens and local auth
 
 Community Hero helps people report, verify, track, and resolve community infrastructure issues with image analysis, live updates, maps, and authority workflows.
 
+## Live Demo
+
+https://community-hero-illg3ukkca-el.a.run.app
+
 ## Features
 
 - Image-based issue reporting with Gemini AI analysis
