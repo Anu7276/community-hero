@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, writeDB } = require('../db/init');
+const {
+  getIssues,
+  getIssue,
+  getComments,
+  addComment,
+  setVote,
+  updateIssue,
+  streamImage,
+} = require('../db/init');
 
 // GET all issues with filters
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { severity, type, status, limit = 50 } = req.query;
-  let issues = readDB().issues;
+  let issues = await getIssues();
 
   if (severity) issues = issues.filter(i => i.severity === severity);
   if (type) issues = issues.filter(i => i.issue_type === type);
@@ -31,8 +39,8 @@ router.get('/', (req, res) => {
 });
 
 // GET stats — WIN FEATURE #1: added totalPeopleProtected, totalCostPrevented, avgResolutionDays
-router.get('/meta/stats', (req, res) => {
-  const { issues } = readDB();
+router.get('/meta/stats', async (req, res) => {
+  const issues = await getIssues();
   const sessionId = req.query.sessionId || null;
   const now = new Date();
   const yesterday = new Date(now - 24 * 60 * 60 * 1000);
@@ -99,9 +107,9 @@ router.get('/meta/stats', (req, res) => {
 });
 
 // WIN FEATURE #3: Hotspot Pattern Detection — MUST be before /:id
-router.get('/meta/hotspots', (req, res) => {
+router.get('/meta/hotspots', async (req, res) => {
   try {
-    const { issues } = readDB();
+    const issues = await getIssues();
     const issuesWithCoords = issues.filter(i => i.latitude && i.longitude);
 
     if (issuesWithCoords.length < 2) {
@@ -174,13 +182,21 @@ router.get('/meta/hotspots', (req, res) => {
 });
 
 // GET single issue
-router.get('/:id', (req, res) => {
-  const db = readDB();
-  const issue = db.issues.find(i => i.id === parseInt(req.params.id));
+router.get('/images/:fileName', async (req, res) => {
+  try {
+    await streamImage(req.params.fileName, res)
+  } catch (err) {
+    console.error('Image load error:', err)
+    if (!res.headersSent) res.status(500).json({ error: 'Failed to load image' })
+  }
+});
+
+// GET single issue
+router.get('/:id', async (req, res) => {
+  const issue = await getIssue(req.params.id);
   if (!issue) return res.status(404).json({ error: 'Issue not found' });
 
-  const comments = db.comments.filter(c => c.issue_id === issue.id)
-    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  const comments = await getComments(issue.id);
 
   const parsedIssue = {
     ...issue,
@@ -204,27 +220,11 @@ router.post('/:id/vote', async (req, res) => {
     return res.status(400).json({ error: 'Invalid vote type' });
   }
 
-  const issueId = parseInt(req.params.id);
-  const db = readDB();
+  const result = await setVote(req.params.id, sessionId, voteType);
+  if (!result) return res.status(404).json({ error: 'Issue not found' });
 
-  db.votes = db.votes.filter(v => !(v.issue_id === issueId && v.voter_session === (sessionId || 'anon')));
-  db.votes.push({ issue_id: issueId, voter_session: sessionId || 'anon', vote_type: voteType });
-
-  const upvotes = db.votes.filter(v => v.issue_id === issueId && v.vote_type === 'up').length;
-  const downvotes = db.votes.filter(v => v.issue_id === issueId && v.vote_type === 'down').length;
-
-  const issueIdx = db.issues.findIndex(i => i.id === issueId);
-  if (issueIdx === -1) return res.status(404).json({ error: 'Issue not found' });
-
-  db.issues[issueIdx].upvotes = upvotes;
-  db.issues[issueIdx].downvotes = downvotes;
-  db.issues[issueIdx].verified_count = upvotes;
-  if (upvotes >= 5 && db.issues[issueIdx].status === 'pending') {
-    db.issues[issueIdx].status = 'verified';
-  }
-
-  await writeDB(db);
-  req.app.get('io').emit('issue_updated', db.issues[issueIdx]);
+  const { issue, upvotes, downvotes } = result;
+  req.app.get('io').emit('issue_updated', issue);
   res.json({ success: true, upvotes, downvotes });
 });
 
@@ -240,16 +240,15 @@ router.patch('/:id/status', async (req, res) => {
   const allowed = ['pending', 'verified', 'in_progress', 'resolved'];
   if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
 
-  const db = readDB();
-  const idx = db.issues.findIndex(i => i.id === parseInt(req.params.id));
-  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  const issue = await updateIssue(req.params.id, current => ({
+    ...current,
+    status,
+    updated_at: new Date().toISOString(),
+  }));
+  if (!issue) return res.status(404).json({ error: 'Not found' });
 
-  db.issues[idx].status = status;
-  db.issues[idx].updated_at = new Date().toISOString();
-
-  await writeDB(db);
-  req.app.get('io').emit('issue_updated', db.issues[idx]);
-  res.json({ success: true, issue: db.issues[idx] });
+  req.app.get('io').emit('issue_updated', issue);
+  res.json({ success: true, issue });
 });
 
 // POST comment
@@ -261,7 +260,6 @@ router.post('/:id/comments', async (req, res) => {
     return res.status(400).json({ error: 'Comment too long' });
   }
 
-  const db = readDB();
   const newComment = {
     id: Date.now(),
     issue_id: parseInt(req.params.id),
@@ -269,9 +267,8 @@ router.post('/:id/comments', async (req, res) => {
     comment: comment.trim(),
     created_at: new Date().toISOString(),
   };
-  db.comments.push(newComment);
 
-  await writeDB(db);
+  await addComment(newComment);
   res.json({ success: true, id: newComment.id });
 });
 
@@ -279,17 +276,17 @@ router.post('/:id/resolve-photo', async (req, res) => {
   try {
     const { resolvePhoto, resolvedBy } = req.body
     if (!resolvePhoto) return res.status(400).json({ error: 'Photo required' })
-    const db = readDB()
-    const idx = db.issues.findIndex(i => i.id === parseInt(req.params.id))
-    if (idx === -1) return res.status(404).json({ error: 'Issue not found' })
-    db.issues[idx].resolve_photo = resolvePhoto
-    db.issues[idx].resolved_by = resolvedBy || 'Authority'
-    db.issues[idx].resolved_at = new Date().toISOString()
-    db.issues[idx].status = 'resolved'
-    db.issues[idx].updated_at = new Date().toISOString()
-    await writeDB(db)
-    req.app.get('io').emit('issue_updated', db.issues[idx])
-    res.json({ success: true, issue: db.issues[idx] })
+    const issue = await updateIssue(req.params.id, current => ({
+      ...current,
+      resolve_photo: resolvePhoto,
+      resolved_by: resolvedBy || 'Authority',
+      resolved_at: new Date().toISOString(),
+      status: 'resolved',
+      updated_at: new Date().toISOString(),
+    }))
+    if (!issue) return res.status(404).json({ error: 'Issue not found' })
+    req.app.get('io').emit('issue_updated', issue)
+    res.json({ success: true, issue })
   } catch (err) {
     res.status(500).json({ error: 'Failed to update' })
   }

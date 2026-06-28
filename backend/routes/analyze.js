@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 const { analyzeImage } = require('../controllers/geminiController');
-const { readDB, writeDB } = require('../db/init');
+const { addIssue, uploadIssueImage } = require('../db/init');
 
 // Memory storage — no disk writes
 const storage = multer.memoryStorage();
@@ -83,12 +83,10 @@ router.post('/', rateLimiter, upload.single('image'), async (req, res) => {
     let autoAlert = null;
 
     if (analysis.issue_detection?.issue_found) {
-      const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      const imagePath = await uploadIssueImage(req.file.buffer, req.file.mimetype);
 
-      const db = readDB();
       const locationLabel = issueAddress || analysis.location_information?.area_description || 'Unknown Location';
-      const newIssue = {
-        id: db._nextId++,
+      const newIssue = await addIssue({
         title: `${analysis.issue_detection?.issue_type || 'ISSUE'} — ${locationLabel}`,
         description: analysis.visual_analysis?.description || '',
         issue_type: analysis.issue_detection?.issue_type || 'OTHER',
@@ -98,7 +96,7 @@ router.post('/', rateLimiter, upload.single('image'), async (req, res) => {
         longitude: analysis.location_information?.estimated_longitude || null,
         issue_address: issueAddress,
         area_description: analysis.location_information?.area_description || null,
-        image_path: base64Image,
+        image_path: imagePath,
         reporter_name: reporterName,
         session_id: req.body.sessionId || null,
         confidence_overall: analysis.metadata?.confidence_overall || 0,
@@ -116,10 +114,8 @@ router.post('/', rateLimiter, upload.single('image'), async (req, res) => {
         verified_count: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      };
+      });
 
-      db.issues.push(newIssue);
-      await writeDB(db);
       savedId = newIssue.id;
 
       req.app.get('io').emit('new_issue', {
