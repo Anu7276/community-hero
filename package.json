@@ -1,0 +1,14 @@
+{
+  "name": "community-hero",
+  "version": "1.0.0",
+  "description": "Community Hero - AI-powered hyperlocal infrastructure issue reporting",
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "start": "concurrently \"cd backend && node server.js\" \"cd frontend && npm run preview\"",
+    "build": "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

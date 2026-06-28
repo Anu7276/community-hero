@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-white text-slate-800;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  a { @apply no-underline; }
+  button, input, textarea, select { font-family: inherit; }
+
+  html { scroll-behavior: smooth; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+  @media (min-width: 640px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    textarea,
+    select {
+      font-size: 15px !important;
+    }
+  }
+}
+
+@layer components {
+  .gov-stripe {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .gov-stripe-nav {
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border-radius: 1rem 1rem 0 0;
+    overflow: hidden;
+  }
+
+  .gov-stripe-nav .gov-stripe-saffron {
+    background-color: #FF9933;
+    flex: 1;
+    min-height: 100%;
+    border-top-left-radius: 1rem;
+  }
+
+  .gov-stripe-nav .gov-stripe-white {
+    background-color: #FFFFFF;
+    flex: 1;
+    min-height: 100%;
+  }
+
+  .gov-stripe-nav .gov-stripe-green {
+    background-color: #138808;
+    flex: 1;
+    min-height: 100%;
+    border-top-right-radius: 1rem;
+  }
+
+  .gov-stripe-footer {
+    height: 8px;
+  }
+
+  .gov-stripe-saffron {
+    background-color: #FF9933;
+    flex: 1;
+    min-height: 100%;
+  }
+
+  .gov-stripe-white {
+    background-color: #FFFFFF;
+    flex: 1;
+    min-height: 100%;
+  }
+
+  .gov-stripe-green {
+    background-color: #138808;
+    flex: 1;
+    min-height: 100%;
+  }
+
+  .card {
+    @apply bg-white text-slate-900 border border-slate-200 rounded-xl shadow-sm transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:border-slate-300 hover:shadow-md;
+  }
+
+  .btn-primary {
+    background-color: #1e40af;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(30, 64, 175, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-primary:hover { background-color: #1e3a8a; }
+  .btn-primary:active { background-color: #172554; }
+
+  .btn-secondary {
+    @apply bg-white text-slate-800 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 px-4 py-2.5 rounded-lg transition-all duration-200 inline-flex items-center gap-2 select-none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-ghost {
+    @apply text-slate-600 hover:text-slate-900 hover:bg-slate-100 px-3 py-2 rounded-lg transition-all duration-200 inline-flex items-center gap-2 select-none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .input-field {
+    @apply w-full bg-white text-slate-900 px-4 py-3 rounded-lg border border-slate-300 outline-none placeholder-slate-400 transition-all duration-200;
+  }
+  .input-field:focus {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+  }
+
+  .section-title {
+    @apply text-sm font-semibold text-slate-800 flex items-center gap-2 mb-3;
+  }
+
+  .tag {
+    @apply text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-700 border border-slate-200;
+  }
+
+  .page-header {
+    @apply border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-4 py-6 sm:py-8;
+  }
+
+  .stat-card {
+    @apply bg-white border border-slate-200 rounded-xl p-4 shadow-sm;
+  }
+}
+
+.leaflet-container { background: #0A0E1A !important; }
+
+/* Leaflet dark theme */
+.leaflet-tile {
+  filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7) !important;
+}
+.leaflet-popup-content-wrapper {
+  background: #111827 !important;
+  border: 1px solid #1F2937 !important;
+  border-radius: 12px !important;
+  color: #F9FAFB !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+}
+.leaflet-popup-tip {
+  background: #111827 !important;
+}
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  color: #F9FAFB !important;
+}
+.leaflet-control-zoom a {
+  background: #111827 !important;
+  color: #F9FAFB !important;
+  border-color: #374151 !important;
+}
+.leaflet-control-zoom a:hover {
+  background: #1F2937 !important;
+}
+.leaflet-control-attribution {
+  background: rgba(17,24,39,0.8) !important;
+  color: #6B7280 !important;
+}
+.leaflet-control-attribution a {
+  color: #9CA3AF !important;
+}
+
+/* India tricolor top accent */
+.tricolor-bar {
+  background: linear-gradient(to right, #FF9933 33.33%, #ffffff 33.33%, #ffffff 66.66%, #138808 66.66%);
+  height: 3px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F8FAFC 50%, #E2E8F0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-up { animation: slideUp 0.5s ease forwards; }
+
+@keyframes pulse-critical {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.2); }
+  50% { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08); }
+}
+.pulse-critical { animation: pulse-critical 2s ease-in-out infinite; }
+
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button { -webkit-user-select: none; user-select: none; }
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 640px) {
+  .pb-safe { padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 #F8FAFC;
+}
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: #F8FAFC; }
+*::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
