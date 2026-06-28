@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-const net = require('net');
+const path = require('path');
 const { Server } = require('socket.io');
 const { initDB } = require('./db/init');
 
@@ -13,18 +13,22 @@ const app = express();
 const server = http.createServer(app);
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 const LOCALHOST_ORIGIN = /^http:\/\/localhost(:\d+)?$/
+const allowedOrigins = IS_PRODUCTION && !process.env.FRONTEND_URL
+  ? true
+  : [FRONTEND_URL, LOCALHOST_ORIGIN]
 
 const io = new Server(server, {
   cors: {
-    origin: [FRONTEND_URL, LOCALHOST_ORIGIN],
+    origin: allowedOrigins,
     methods: ['GET', 'POST']
   }
 });
 
 app.use(cors({
-  origin: [FRONTEND_URL, LOCALHOST_ORIGIN],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PATCH'],
   credentials: true
 }));
@@ -43,6 +47,14 @@ app.get('/health', (req, res) => res.json({
   uptime: Math.floor(process.uptime()),
 }));
 
+if (IS_PRODUCTION) {
+  const frontendDist = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
@@ -53,26 +65,8 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {});
 });
 
-const START_PORT = parseInt(process.env.PORT, 10) || 5000
-const MAX_PORT = START_PORT + 10
-
-function checkPort(port) {
-  return new Promise((resolve) => {
-    const tester = net.createServer()
-    tester.once('error', () => resolve(false))
-    tester.once('listening', () => tester.close(() => resolve(true)))
-    tester.listen({ port, host: '127.0.0.1' })
-  })
-}
-
-async function getAvailablePort(startPort, maxPort) {
-  for (let port = startPort; port <= maxPort; port += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    if (await checkPort(port)) return port
-    console.warn(`Port ${port} is in use, trying the next one...`)
-  }
-  throw new Error(`No available ports between ${startPort} and ${maxPort}`)
-}
+const PORT = parseInt(process.env.PORT, 10) || 5000
+const HOST = process.env.HOST || '0.0.0.0'
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
@@ -84,10 +78,8 @@ server.on('error', (err) => {
 })
 
 async function startServer() {
-  const PORT = await getAvailablePort(START_PORT, MAX_PORT)
-
   initDB().then(() => {
-    server.listen(PORT, '127.0.0.1', () => {
+    server.listen(PORT, HOST, () => {
       console.log(`🚀 Community Hero backend running on port ${PORT}`)
       console.log(`🌍 Frontend URL: ${FRONTEND_URL}`)
       console.log(`🤖 Gemini API: ${process.env.GEMINI_API_KEY ? '✅ configured' : '❌ MISSING'}`)

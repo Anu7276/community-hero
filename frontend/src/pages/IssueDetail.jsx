@@ -5,7 +5,7 @@ import {
   AlertTriangle, Zap, Brain, MessageSquare, Send, Share2, Bell, Copy, Users, Wrench, IndianRupee, Camera
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { issuesAPI, shareOnWhatsApp } from '../utils/api'
+import { apiUrl, issuesAPI, shareOnWhatsApp } from '../utils/api'
 import IssueTimeline from '../components/IssueTimeline'
 import ReportDateBadge from '../components/ReportDateBadge'
 import LocationPreview from '../components/LocationPreview'
@@ -156,10 +156,10 @@ export default function IssueDetail() {
       {/* Hero Image */}
       {issue.image_path && (
         <div className="relative rounded-2xl overflow-hidden mb-4 bg-slate-50 shadow-sm">
-          <img
-            src={issue.image_path.startsWith('data:')
-              ? issue.image_path
-              : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${issue.image_path}`}
+            <img
+              src={issue.image_path.startsWith('data:')
+                ? issue.image_path
+                : apiUrl(issue.image_path)}
             alt={issue.title}
             className="w-full max-h-72 object-cover"
           />

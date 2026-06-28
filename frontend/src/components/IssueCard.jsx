@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { MapPin, ThumbsUp, ThumbsDown, Clock, CheckCircle, Zap } from 'lucide-react'
 import ReportDateBadge from './ReportDateBadge'
+import { apiUrl } from '../utils/api'
 
 const TYPE_ICONS = {
   POTHOLE: '🕳️', WATER_LEAK: '💧', STREETLIGHT: '💡',
@@ -35,10 +36,10 @@ export default function IssueCard({ issue, onVote }) {
     >
       {issue.image_path ? (
         <div className="relative h-44 overflow-hidden bg-slate-100">
-          <img
-            src={issue.image_path?.startsWith('data:')
-              ? issue.image_path
-              : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${issue.image_path}`}
+            <img
+              src={issue.image_path?.startsWith('data:')
+                ? issue.image_path
+                : apiUrl(issue.image_path)}
             alt={issue.title}
             className="w-full h-full object-cover"
             onError={e => { e.target.parentElement.style.display = 'none' }}

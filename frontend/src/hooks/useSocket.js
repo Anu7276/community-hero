@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import { io } from 'socket.io-client'
+import { API_ORIGIN } from '../utils/api'
 
 let socket = null
 
 function getSocket() {
   if (!socket || socket.disconnected) {
-    socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+    socket = io(API_ORIGIN || window.location.origin, {
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,

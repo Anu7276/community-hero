@@ -1,7 +1,10 @@
 import axios from 'axios'
 
+export const API_ORIGIN = import.meta.env.VITE_API_URL || ''
+export const apiUrl = (path = '') => `${API_ORIGIN}${path}`
+
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`,
+  baseURL: apiUrl('/api'),
   timeout: 35000, // 35s — slightly more than Gemini 30s timeout
 })
 

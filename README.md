@@ -95,6 +95,48 @@ npm run build
 
 ## Deployment
 
+### Google Cloud Run
+
+This repository includes a `Dockerfile` for a single Cloud Run service. The backend serves the API and the built frontend from the same deployed URL.
+
+1. Install and initialize the Google Cloud CLI:
+
+```bash
+gcloud init
+gcloud auth login
+```
+
+2. Set your project and region:
+
+```bash
+gcloud config set project YOUR_PROJECT_ID
+gcloud config set run/region asia-south1
+```
+
+3. Enable required services:
+
+```bash
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+```
+
+4. Deploy from the repository root:
+
+```bash
+gcloud run deploy community-hero \
+  --source . \
+  --allow-unauthenticated \
+  --set-env-vars NODE_ENV=production,GEMINI_API_KEY=YOUR_GEMINI_KEY,GEMINI_MODEL=gemini-2.5-flash,ADMIN_KEY=community-hero-admin
+```
+
+5. Optional: after deploy, copy the Cloud Run service URL and lock CORS to that URL:
+
+```bash
+gcloud run services update community-hero \
+  --update-env-vars FRONTEND_URL=YOUR_CLOUD_RUN_SERVICE_URL
+```
+
+The app will be available at the Cloud Run service URL. The health endpoint is `YOUR_CLOUD_RUN_SERVICE_URL/health`.
+
 ### Backend on Render
 
 - Root directory: `backend`
