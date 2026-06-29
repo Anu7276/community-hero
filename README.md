@@ -16,8 +16,6 @@ Topics:
 
 https://community-hero-illg3ukkca-el.a.run.app
 
-## Screenshots
-
 ## Features
 
 - Image-based issue reporting with Gemini AI analysis
