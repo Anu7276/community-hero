@@ -4,9 +4,21 @@ AI-powered hyperlocal infrastructure issue reporting for citizens and local auth
 
 Community Hero helps people report, verify, track, and resolve community infrastructure issues with image analysis, live updates, maps, and authority workflows.
 
+## GitHub Repository Metadata
+
+Description:
+AI-powered civic platform for reporting & resolving community infrastructure issues - Built with Gemini 2.5 Flash, Google Cloud Run, Firestore & Maps
+
+Topics:
+`gemini-ai` `google-cloud` `react` `nodejs` `civic-tech` `india` `infrastructure` `vibe2ship` `hackathon` `firestore` `cloud-run` `socket-io`
+
 ## Live Demo
 
 https://community-hero-illg3ukkca-el.a.run.app
+
+## Screenshots
+
+![Dashboard](https://community-hero-illg3ukkca-el.a.run.app/screenshot.png)
 
 ## Features
 
@@ -25,7 +37,7 @@ https://community-hero-illg3ukkca-el.a.run.app
 | --- | --- |
 | Frontend | React 18, Vite, Tailwind CSS |
 | Backend | Node.js, Express, Socket.IO |
-| AI | Google Gemini |
+| AI | Google Gemini 2.5 Flash (Google AI Studio) |
 | Maps | Google Maps Embed API, React Leaflet |
 | Database | Firestore on Google Cloud Run, JSON file store locally |
 | Images | Cloud Storage on Google Cloud Run, inline local storage locally |
