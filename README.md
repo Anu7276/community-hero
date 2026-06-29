@@ -18,8 +18,6 @@ https://community-hero-illg3ukkca-el.a.run.app
 
 ## Screenshots
 
-![Dashboard](https://community-hero-illg3ukkca-el.a.run.app/screenshot.png)
-
 ## Features
 
 - Image-based issue reporting with Gemini AI analysis
