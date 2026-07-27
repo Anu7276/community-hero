@@ -14,7 +14,9 @@ Topics:
 
 ## Live Demo
 
-https://community-hero-illg3ukkca-el.a.run.app
+Vercel frontend: https://frontend-five-iota-48.vercel.app
+
+Backend API (Cloud Run): https://community-hero-illg3ukkca-el.a.run.app
 
 ## Features
 
