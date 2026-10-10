@@ -14,9 +14,8 @@ Topics:
 
 ## Live Demo
 
-Vercel frontend: https://frontend-five-iota-48.vercel.app
-
-Backend API (Cloud Run): https://community-hero-illg3ukkca-el.a.run.app
+Live Application (Frontend & Backend): https://community-hero-oxtx.onrender.com
+Health Check: https://community-hero-oxtx.onrender.com/health
 
 ## Features
 
