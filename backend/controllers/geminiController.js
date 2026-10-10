@@ -98,7 +98,11 @@ function getModel() {
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) throw new Error('GEMINI_API_KEY not set in environment')
     const genAI = new GoogleGenerativeAI(apiKey)
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+    let modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash'
+    // Normalize if set to non-existent 2.5 flash
+    if (modelName === 'gemini-2.5-flash') {
+      modelName = 'gemini-1.5-flash'
+    }
     _model = genAI.getGenerativeModel({ model: modelName })
   }
   return _model

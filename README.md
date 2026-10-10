@@ -136,7 +136,7 @@ gcloud run deploy community-hero \
   --source . \
   --region asia-south1 \
   --allow-unauthenticated \
-  --set-env-vars NODE_ENV=production,DB_PROVIDER=firestore,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,FIREBASE_STORAGE_BUCKET=YOUR_BUCKET_NAME,GEMINI_MODEL=gemini-2.5-flash
+  --set-env-vars NODE_ENV=production,DB_PROVIDER=firestore,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,FIREBASE_STORAGE_BUCKET=YOUR_BUCKET_NAME,GEMINI_MODEL=gemini-1.5-flash
 ```
 
 Set secrets for production:
